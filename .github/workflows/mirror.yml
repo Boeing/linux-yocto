@@ -1,25 +1,23 @@
-name: Update GitHub Mirror
-
+#
+# Based on https://github.com/marketplace/actions/mirror-to-github
+#
+name: 'mirror'
 on:
   push:
     branches:
-      - master # Replace with your branch name
-  #schedule:
-  #  - cron: '*/5 * * * *' # Runs every 5 minutes    
-    # - cron: '0 * * * *' # Runs every hour
+        - __mirror
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
 
 jobs:
-  update_mirror:
+  mirror:
     runs-on: ubuntu-latest
-
+    name: mirror
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Update local from upstream
-        run: |
-          git remote add upstream https://git.yoctoproject.org/linux-yocto
-          git remote -v
-          git fetch upstream
-          git fetch --tags
-          git push origin --mirror --tags
+      - name: mirror
+        id: mirror
+        uses: bridgelightcloud/github-mirror-action@v3
+        with:
+          origin: 'https://git.yoctoproject.org/linux-yocto'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
